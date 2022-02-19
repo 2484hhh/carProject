@@ -1,0 +1,42 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: rental
+  labels:
+    app: rental
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: rental
+  template:
+    metadata:
+      labels:
+        app: rental
+        version: v1.0
+    spec:
+      containers:
+      - name: rental
+        image: ccr.ccs.tencentyun.com/carcar/rental:1.0
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 8081
+        resources:
+          limits:
+            cpu: 100m
+            memory: 128Mi
+      imagePullSecrets:
+        - name: qcloudregistrykey
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: rental
+spec:
+  selector:
+    app: rental
+  ports:
+    - name: grpc
+      protocol: TCP
+      port: 8081
+  type: ClusterIP
